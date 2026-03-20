@@ -34,9 +34,9 @@
     --status-todo-bg: var(--blue-soft);
     --status-todo-text: var(--blue);
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
     font-family: 'DM Sans', sans-serif;
     background: #CCCCE8;
@@ -47,7 +47,7 @@
     padding: 24px;
     gap: 20px;
   }
-
+ 
   /* ── TOOLBAR ── */
   .toolbar {
     background: var(--blue);
@@ -60,7 +60,7 @@
     max-width: 1200px;
     flex-wrap: wrap;
   }
-
+ 
   .toolbar h2 {
     color: white;
     font-family: 'DM Sans', sans-serif;
@@ -69,7 +69,7 @@
     flex: 1;
     min-width: 120px;
   }
-
+ 
   .btn {
     padding: 9px 20px;
     border-radius: 8px;
@@ -83,32 +83,32 @@
     align-items: center;
     gap: 8px;
   }
-
+ 
   .btn-primary {
     background: var(--green);
     color: white;
   }
   .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
-
+ 
   .btn-orange {
     background: var(--orange);
     color: white;
   }
   .btn-orange:hover { background: #d4742a; transform: translateY(-1px); }
-
+ 
   .btn-ghost {
     background: rgba(255,255,255,0.1);
     color: white;
     border: 1px solid rgba(255,255,255,0.2);
   }
   .btn-ghost:hover { background: rgba(255,255,255,0.2); }
-
+ 
   .export-options {
     display: flex;
     gap: 8px;
     align-items: center;
   }
-
+ 
   .resolution-select {
     background: rgba(255,255,255,0.1);
     color: white;
@@ -121,14 +121,14 @@
     outline: none;
   }
   .resolution-select option { background: var(--blue); color: white; }
-
+ 
   .date-display {
     color: rgba(255,255,255,0.6);
     font-size: 13px;
     font-weight: 500;
     letter-spacing: .02em;
   }
-
+ 
   /* ── SLIDE CANVAS ── */
   #slide {
     background: var(--bg);
@@ -139,7 +139,7 @@
     box-shadow: 0 24px 64px rgba(49,47,150,0.15);
     position: relative;
   }
-
+ 
   .slide-header {
     background: var(--blue);
     padding: 28px 48px 24px;
@@ -149,7 +149,7 @@
     position: relative;
     overflow: hidden;
   }
-
+ 
   .slide-header::before {
     content: '';
     position: absolute;
@@ -158,7 +158,7 @@
     background: radial-gradient(circle, rgba(29,178,182,0.25) 0%, transparent 70%);
     pointer-events: none;
   }
-
+ 
   .slide-header::after {
     content: '';
     position: absolute;
@@ -166,7 +166,7 @@
     height: 3px;
     background: linear-gradient(90deg, var(--green) 0%, var(--blue-light) 50%, var(--orange) 100%);
   }
-
+ 
   .slide-title {
     font-family: 'DM Sans', sans-serif;
     font-size: 36px;
@@ -174,15 +174,15 @@
     color: white;
     letter-spacing: -0.03em;
   }
-
+ 
   .slide-title span {
-    color: var(--green-light);
+    color: #FFFFFF;
   }
-
+ 
   .slide-meta {
     text-align: right;
   }
-
+ 
   .slide-meta .week-badge {
     background: var(--green);
     color: white;
@@ -195,13 +195,13 @@
     display: inline-block;
     margin-bottom: 6px;
   }
-
+ 
   .slide-meta .date-label {
     color: rgba(255,255,255,0.5);
     font-size: 13px;
     display: block;
   }
-
+ 
   /* ── SLIDE BODY ── */
   .slide-body {
     padding: 32px 40px 36px;
@@ -209,7 +209,7 @@
     flex-direction: column;
     gap: 24px;
   }
-
+ 
   /* ── SECTION ── */
   .section {
     display: grid;
@@ -217,7 +217,7 @@
     gap: 16px;
     align-items: start;
   }
-
+ 
   .section-header {
     grid-column: 1 / -1;
     display: flex;
@@ -225,7 +225,7 @@
     gap: 12px;
     margin-bottom: 4px;
   }
-
+ 
   .section-label {
     font-family: 'DM Sans', sans-serif;
     font-size: 20px;
@@ -233,12 +233,12 @@
     font-weight: 700;
     letter-spacing: -0.02em;
   }
-
+ 
   .section-label .accent {
     color: var(--teal);
     font-style: italic;
   }
-
+ 
   .section-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
@@ -247,7 +247,7 @@
   .dot-blue { background: var(--blue); }
   .dot-green { background: var(--green); }
   .dot-orange { background: var(--orange); }
-
+ 
   /* ── CARDS ── */
   .tasks-card, .status-card {
     background: var(--card);
@@ -255,33 +255,33 @@
     border: 1px solid var(--border);
     overflow: hidden;
   }
-
+ 
   .card-inner {
     padding: 16px 20px;
     min-height: 80px;
   }
-
+ 
   .card-footer {
     height: 3px;
   }
-
+ 
   .footer-blue { background: var(--blue); }
   .footer-green { background: var(--green); }
   .footer-orange { background: var(--orange); }
-
+ 
   /* ── TASK ITEMS ── */
   .task-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-
+ 
   .task-item {
     display: flex;
     align-items: flex-start;
     gap: 10px;
   }
-
+ 
   .task-bullet {
     width: 6px; height: 6px;
     border-radius: 50%;
@@ -289,10 +289,10 @@
     margin-top: 7px;
     flex-shrink: 0;
   }
-
+ 
   .task-bullet-green { background: var(--green); }
   .task-bullet-orange { background: var(--orange); }
-
+ 
   .task-text {
     font-size: 14px;
     color: var(--text);
@@ -309,14 +309,14 @@
     padding: 0;
     width: 100%;
   }
-
+ 
   .task-text:focus {
     background: rgba(49,47,150,0.04);
     border-radius: 4px;
     padding: 2px 4px;
     margin: -2px -4px;
   }
-
+ 
   .task-delete {
     opacity: 0;
     background: none;
@@ -329,10 +329,10 @@
     transition: all .15s;
     flex-shrink: 0;
   }
-
+ 
   .task-item:hover .task-delete { opacity: 1; }
   .task-delete:hover { color: #e55; background: #fee; }
-
+ 
   .add-task-btn {
     background: none;
     border: none;
@@ -350,20 +350,20 @@
   }
   .add-task-btn:hover { opacity: 1; }
   .add-task-btn.orange { color: var(--orange); }
-
+ 
   /* ── STATUS ITEMS ── */
   .status-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-
+ 
   .status-item {
     display: flex;
     align-items: center;
     gap: 8px;
   }
-
+ 
   .status-badge {
     font-size: 12px;
     font-weight: 600;
@@ -375,11 +375,11 @@
     font-family: 'DM Sans', sans-serif;
     transition: all .15s;
   }
-
+ 
   .status-done { background: var(--status-done-bg); color: var(--status-done-text); }
   .status-progress { background: var(--status-progress-bg); color: var(--status-progress-text); }
   .status-todo { background: var(--status-todo-bg); color: var(--status-todo-text); }
-
+ 
   .status-text {
     font-size: 13px;
     color: var(--text);
@@ -390,14 +390,14 @@
     cursor: text;
     padding: 0;
   }
-
+ 
   .status-text:focus {
     background: rgba(49,47,150,0.04);
     border-radius: 4px;
     padding: 2px 4px;
     margin: -2px -4px;
   }
-
+ 
   .status-delete {
     opacity: 0;
     background: none;
@@ -412,13 +412,13 @@
   }
   .status-item:hover .status-delete { opacity: 1; }
   .status-delete:hover { color: #e55; background: #fee; }
-
+ 
   /* ── DIVIDER ── */
   .section-divider {
     height: 1px;
     background: var(--border);
   }
-
+ 
   /* ── EDIT INDICATORS (hidden on export) ── */
   .edit-hint {
     display: inline-block;
@@ -432,9 +432,9 @@
     vertical-align: middle;
     font-weight: 500;
   }
-
+ 
   .no-export { }
-
+ 
   /* ── LOADING OVERLAY ── */
   #loading-overlay {
     display: none;
@@ -448,9 +448,9 @@
     gap: 16px;
     backdrop-filter: blur(4px);
   }
-
+ 
   #loading-overlay.active { display: flex; }
-
+ 
   .spinner {
     width: 48px; height: 48px;
     border: 4px solid rgba(255,255,255,0.2);
@@ -458,16 +458,16 @@
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
+ 
   @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
   #loading-overlay p {
     color: white;
     font-family: 'DM Sans', sans-serif;
     font-size: 16px;
     font-weight: 500;
   }
-
+ 
   /* ── SECTION TITLE EDIT ── */
   .editable-title {
     border: none;
@@ -484,7 +484,7 @@
   .editable-title:focus {
     border-bottom: 2px solid var(--blue);
   }
-
+ 
   .week-input {
     background: rgba(255,255,255,0.15);
     border: 1px solid rgba(255,255,255,0.2);
@@ -500,7 +500,7 @@
 </style>
 </head>
 <body>
-
+ 
 <!-- TOOLBAR -->
 <div class="toolbar">
   <h2>✦ Weekly Slide</h2>
@@ -518,10 +518,10 @@
     <button class="btn btn-ghost" onclick="resetSlide()">↺ Reset</button>
   </div>
 </div>
-
+ 
 <!-- SLIDE -->
 <div id="slide">
-
+ 
   <!-- HEADER -->
   <div class="slide-header">
     <div>
@@ -532,10 +532,10 @@
       <span class="date-label" id="header-date"></span>
     </div>
   </div>
-
+ 
   <!-- BODY -->
   <div class="slide-body">
-
+ 
     <!-- CONSULTING -->
     <div class="section" id="section-consulting">
       <div class="section-header">
@@ -543,7 +543,7 @@
         <input class="editable-title" value="Consulting" onchange="saveState()">
         <span class="edit-hint no-export">cliquez pour éditer</span>
       </div>
-
+ 
       <div class="tasks-card">
         <div class="card-inner">
           <div class="task-list" id="tasks-consulting"></div>
@@ -551,7 +551,7 @@
         </div>
         <div class="card-footer footer-blue"></div>
       </div>
-
+ 
       <div class="status-card">
         <div class="card-inner">
           <div class="status-list" id="status-consulting"></div>
@@ -560,9 +560,9 @@
         <div class="card-footer footer-blue"></div>
       </div>
     </div>
-
+ 
     <div class="section-divider"></div>
-
+ 
     <!-- DÉV PRODUIT -->
     <div class="section" id="section-dev">
       <div class="section-header">
@@ -571,7 +571,7 @@
         <span style="font-family:'DM Sans',sans-serif;font-size:18px;color:var(--text-muted);font-style:italic;font-weight:400;">&nbsp;(Produit)</span>
         <span class="edit-hint no-export">cliquez pour éditer</span>
       </div>
-
+ 
       <div class="tasks-card">
         <div class="card-inner">
           <div class="task-list" id="tasks-dev"></div>
@@ -579,7 +579,7 @@
         </div>
         <div class="card-footer footer-green"></div>
       </div>
-
+ 
       <div class="status-card">
         <div class="card-inner">
           <div class="status-list" id="status-dev"></div>
@@ -588,9 +588,9 @@
         <div class="card-footer footer-green"></div>
       </div>
     </div>
-
+ 
     <div class="section-divider"></div>
-
+ 
     <!-- MARKETING -->
     <div class="section" id="section-marketing">
       <div class="section-header">
@@ -598,7 +598,7 @@
         <input class="editable-title" value="Marketing" onchange="saveState()">
         <span class="edit-hint no-export">cliquez pour éditer</span>
       </div>
-
+ 
       <div class="tasks-card">
         <div class="card-inner">
           <div class="task-list" id="tasks-marketing"></div>
@@ -606,7 +606,7 @@
         </div>
         <div class="card-footer footer-orange"></div>
       </div>
-
+ 
       <div class="status-card">
         <div class="card-inner">
           <div class="status-list" id="status-marketing"></div>
@@ -615,16 +615,16 @@
         <div class="card-footer footer-orange"></div>
       </div>
     </div>
-
+ 
   </div>
 </div>
-
+ 
 <!-- LOADING -->
 <div id="loading-overlay">
   <div class="spinner"></div>
   <p>Génération de l'image…</p>
 </div>
-
+ 
 <script>
 // ── DEFAULT DATA ──
 const defaultData = {
@@ -653,18 +653,18 @@ const defaultData = {
     ]
   }
 };
-
+ 
 const statusCycle = ["done", "progress", "todo"];
 const statusLabels = { done: "Terminé ✓", progress: "En cours", todo: "À venir" };
 const statusClasses = { done: "status-done", progress: "status-progress", todo: "status-todo" };
-
+ 
 function getWeekNumber(d) {
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
   d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
   var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
   return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
-
+ 
 function getWeekBounds(d) {
   // Monday to Friday of the week containing d
   const day = d.getDay(); // 0=Sun, 1=Mon...
@@ -675,35 +675,35 @@ function getWeekBounds(d) {
   friday.setDate(monday.getDate() + 4);
   return { monday, friday };
 }
-
+ 
 function formatDate(d, opts) {
   return d.toLocaleDateString('fr-FR', opts);
 }
-
+ 
 function initDates() {
   const now = new Date();
   const weekNum = getWeekNumber(now);
   const { monday, friday } = getWeekBounds(now);
-
+ 
   const monStr = formatDate(monday, { day: 'numeric', month: 'long' });
   const friStr = formatDate(friday, { day: 'numeric', month: 'long', year: 'numeric' });
-
+ 
   // Always override with computed value — never rely on stored string
   const weekLabel = `Semaine ${weekNum}  ·  ${monStr} – ${friStr}`;
   document.getElementById('week-input').value = weekLabel;
-
+ 
   updateHeader();
 }
-
+ 
 function updateHeader() {
   const val = document.getElementById('week-input').value;
   document.getElementById('header-week').textContent = val || 'Semaine —';
   const now = new Date();
   document.getElementById('header-date').textContent = formatDate(now, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 }
-
+ 
 document.getElementById('week-input').addEventListener('input', updateHeader);
-
+ 
 function createTaskEl(section, text, color) {
   const div = document.createElement('div');
   div.className = 'task-item';
@@ -715,7 +715,7 @@ function createTaskEl(section, text, color) {
   `;
   return div;
 }
-
+ 
 function createStatusEl(section, text, type) {
   const div = document.createElement('div');
   div.className = 'status-item';
@@ -726,7 +726,7 @@ function createStatusEl(section, text, type) {
   `;
   return div;
 }
-
+ 
 function cycleStatus(btn) {
   const classes = Object.values(statusClasses);
   const current = classes.find(c => btn.classList.contains(c)) || 'status-todo';
@@ -738,7 +738,7 @@ function cycleStatus(btn) {
   btn.textContent = statusLabels[nextKey];
   saveState();
 }
-
+ 
 function addTask(section, color) {
   const list = document.getElementById(`tasks-${section}`);
   const el = createTaskEl(section, '', color);
@@ -746,7 +746,7 @@ function addTask(section, color) {
   el.querySelector('textarea').focus();
   saveState();
 }
-
+ 
 function addStatus(section) {
   const list = document.getElementById(`status-${section}`);
   const el = createStatusEl(section, '', 'todo');
@@ -754,31 +754,31 @@ function addStatus(section) {
   el.querySelector('input').focus();
   saveState();
 }
-
+ 
 function autoResize(el) {
   el.style.height = 'auto';
   el.style.height = el.scrollHeight + 'px';
 }
-
+ 
 function renderSection(section, data, color) {
   const taskList = document.getElementById(`tasks-${section}`);
   const statusList = document.getElementById(`status-${section}`);
   taskList.innerHTML = '';
   statusList.innerHTML = '';
-
+ 
   data.tasks.forEach(t => {
     const el = createTaskEl(section, t, color);
     taskList.appendChild(el);
   });
-
+ 
   data.statuses.forEach(s => {
     const el = createStatusEl(section, s.text, s.type);
     statusList.appendChild(el);
   });
-
+ 
   taskList.querySelectorAll('textarea').forEach(autoResize);
 }
-
+ 
 function saveState() {
   const state = {};
   ['consulting','dev','marketing'].forEach(sec => {
@@ -794,7 +794,7 @@ function saveState() {
   });
   try { localStorage.setItem('weekly-design-state', JSON.stringify(state)); } catch(e) {}
 }
-
+ 
 function loadState() {
   try {
     const raw = localStorage.getItem('weekly-design-state');
@@ -802,14 +802,14 @@ function loadState() {
   } catch(e) {}
   return null;
 }
-
+ 
 function resetSlide() {
   if (confirm('Réinitialiser toutes les tâches ?')) {
     try { localStorage.removeItem('weekly-design-state'); } catch(e) {}
     init();
   }
 }
-
+ 
 function init() {
   const saved = loadState() || defaultData;
   renderSection('consulting', saved.consulting, 'blue');
@@ -817,23 +817,23 @@ function init() {
   renderSection('marketing', saved.marketing, 'orange');
   initDates();
 }
-
+ 
 // ── EXPORT ──
 async function exportPNG() {
   const overlay = document.getElementById('loading-overlay');
   overlay.classList.add('active');
-
+ 
   // Hide edit-only elements
   document.querySelectorAll('.no-export').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.edit-hint').forEach(el => el.style.display = 'none');
-
+ 
   const resMap = { '1080': [1920,1080], '2k': [2560,1440], '4k': [3840,2160] };
   const res = document.getElementById('resolution-select').value;
   const [targetW, targetH] = resMap[res];
   const slide = document.getElementById('slide');
   const slideW = slide.offsetWidth;
   const scale = targetW / slideW;
-
+ 
   try {
     const canvas = await html2canvas(slide, {
       scale: scale,
@@ -844,23 +844,23 @@ async function exportPNG() {
       width: slideW,
       height: slide.scrollHeight
     });
-
+ 
     // Create final canvas at exact resolution
     const finalCanvas = document.createElement('canvas');
     finalCanvas.width = targetW;
     finalCanvas.height = targetH;
     const ctx = finalCanvas.getContext('2d');
-
+ 
     // Fill background
     ctx.fillStyle = '#F4F4FB';
     ctx.fillRect(0, 0, targetW, targetH);
-
+ 
     // Center vertically if content shorter than target height
     const srcH = canvas.height;
     const destH = Math.min(srcH, targetH);
     const yOffset = Math.max(0, (targetH - srcH) / 2);
     ctx.drawImage(canvas, 0, 0, targetW, srcH, 0, yOffset, targetW, destH);
-
+ 
     const link = document.createElement('a');
     link.download = `weekly-design-${res}-${new Date().toISOString().slice(0,10)}.png`;
     link.href = finalCanvas.toDataURL('image/png', 1.0);
@@ -873,7 +873,7 @@ async function exportPNG() {
     overlay.classList.remove('active');
   }
 }
-
+ 
 init();
 </script>
 </body>
