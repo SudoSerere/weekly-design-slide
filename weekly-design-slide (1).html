@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Design Slide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root {
+    /* Brand palette */
+    --blue: #312F96;
+    --blue-dark: #221F6E;
+    --blue-light: #5553C2;
+    --blue-soft: #EDEDFA;
+    --orange: #ED7335;
+    --orange-light: #F5976A;
+    --orange-soft: #FEF0E8;
+    --green: #1DB2B6;
+    --green-dark: #158A8D;
+    --green-light: #3FCFD3;
+    --green-soft: #E5F7F8;
+    /* Layout */
+    --bg: #F4F4FB;
+    --card: #FFFFFF;
+    --text: #1A1940;
+    --text-muted: #7878AA;
+    --border: #E0E0F0;
+    /* Status */
+    --status-done-bg: var(--green-soft);
+    --status-done-text: var(--green-dark);
+    --status-progress-bg: var(--orange-soft);
+    --status-progress-text: #C04A10;
+    --status-todo-bg: var(--blue-soft);
+    --status-todo-text: var(--blue);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #CCCCE8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    background: var(--blue);
+    border-radius: 14px;
+    padding: 14px 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar h2 {
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); }
+
+  .btn-orange {
+    background: var(--orange);
+    color: white;
+  }
+  .btn-orange:hover { background: #d4742a; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+
+  .export-options {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .resolution-select {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+  }
+  .resolution-select option { background: var(--blue); color: white; }
+
+  .date-display {
+    color: rgba(255,255,255,0.6);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .02em;
+  }
+
+  /* ── SLIDE CANVAS ── */
+  #slide {
+    background: var(--bg);
+    width: 1200px;
+    min-height: 675px;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(49,47,150,0.15);
+    position: relative;
+  }
+
+  .slide-header {
+    background: var(--blue);
+    padding: 28px 48px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(29,178,182,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .slide-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green) 0%, var(--blue-light) 50%, var(--orange) 100%);
+  }
+
+  .slide-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.03em;
+  }
+
+  .slide-title span {
+    color: var(--green-light);
+  }
+
+  .slide-meta {
+    text-align: right;
+  }
+
+  .slide-meta .week-badge {
+    background: var(--green);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 6px;
+  }
+
+  .slide-meta .date-label {
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    display: block;
+  }
+
+  /* ── SLIDE BODY ── */
+  .slide-body {
+    padding: 32px 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .section-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+
+  .section-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .section-label .accent {
+    color: var(--teal);
+    font-style: italic;
+  }
+
+  .section-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-blue { background: var(--blue); }
+  .dot-green { background: var(--green); }
+  .dot-orange { background: var(--orange); }
+
+  /* ── CARDS ── */
+  .tasks-card, .status-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .card-inner {
+    padding: 16px 20px;
+    min-height: 80px;
+  }
+
+  .card-footer {
+    height: 3px;
+  }
+
+  .footer-blue { background: var(--blue); }
+  .footer-green { background: var(--green); }
+  .footer-orange { background: var(--orange); }
+
+  /* ── TASK ITEMS ── */
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .task-bullet {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .task-bullet-green { background: var(--green); }
+  .task-bullet-orange { background: var(--orange); }
+
+  .task-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+    font-weight: 400;
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    resize: none;
+    min-height: 22px;
+    cursor: text;
+    padding: 0;
+    width: 100%;
+  }
+
+  .task-text:focus {
+    background: rgba(49,47,150,0.04);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+  }
+
+  .task-delete {
+    opacity: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all .15s;
+    flex-shrink: 0;
+  }
+
+  .task-item:hover .task-delete { opacity: 1; }
+  .task-delete:hover { color: #e55; background: #fee; }
+
+  .add-task-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--blue);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.7;
+    transition: opacity .15s;
+  }
+  .add-task-btn:hover { opacity: 1; }
+  .add-task-btn.orange { color: var(--orange); }
+
+  /* ── STATUS ITEMS ── */
+  .status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+
+  .status-done { background: var(--status-done-bg); color: var(--status-done-text); }
+  .status-progress { background: var(--status-progress-bg); color: var(--status-progress-text); }
+  .status-todo { background: var(--status-todo-bg); color: var(--status-todo-text); }
+
+  .status-text {
+    font-size: 13px;
+    color: var(--text);
+    border: none; outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    flex: 1;
+    cursor: text;
+    padding: 0;
+  }
+
+  .status-text:focus {
+    background: rgba(49,47,150,0.04);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: -2px -4px;
+  }
+
+  .status-delete {
+    opacity: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all .15s;
+    flex-shrink: 0;
+  }
+  .status-item:hover .status-delete { opacity: 1; }
+  .status-delete:hover { color: #e55; background: #fee; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── EDIT INDICATORS (hidden on export) ── */
+  .edit-hint {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--blue);
+    background: rgba(49,47,150,0.06);
+    border: 1px dashed rgba(49,47,150,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: 500;
+  }
+
+  .no-export { }
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(49,47,150,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  #loading-overlay.active { display: flex; }
+
+  .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: var(--green-light);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #loading-overlay p {
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* ── SECTION TITLE EDIT ── */
+  .editable-title {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 20px;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    cursor: text;
+    min-width: 80px;
+  }
+  .editable-title:focus {
+    border-bottom: 2px solid var(--blue);
+  }
+
+  .week-input {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 8px 14px;
+    outline: none;
+    width: 180px;
+  }
+  .week-input::placeholder { color: rgba(255,255,255,0.4); }
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <h2>✦ Weekly Slide</h2>
+  <input class="week-input" id="week-input" type="text" placeholder="ex: Semaine 12 — 17 mars 2025" value="">
+  <div class="export-options">
+    <select class="resolution-select" id="resolution-select">
+      <option value="1080">Export 1080p (1920×1080)</option>
+      <option value="2k" selected>Export 2K (2560×1440)</option>
+      <option value="4k">Export 4K (3840×2160)</option>
+    </select>
+    <button class="btn btn-primary" onclick="exportPNG()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exporter PNG
+    </button>
+    <button class="btn btn-ghost" onclick="resetSlide()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- SLIDE -->
+<div id="slide">
+
+  <!-- HEADER -->
+  <div class="slide-header">
+    <div>
+      <div class="slide-title">Weekly <span>Design</span></div>
+    </div>
+    <div class="slide-meta">
+      <span class="week-badge" id="header-week">Semaine —</span>
+      <span class="date-label" id="header-date"></span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="slide-body">
+
+    <!-- CONSULTING -->
+    <div class="section" id="section-consulting">
+      <div class="section-header">
+        <div class="section-dot dot-blue"></div>
+        <input class="editable-title" value="Consulting" onchange="saveState()">
+        <span class="edit-hint no-export">cliquez pour éditer</span>
+      </div>
+
+      <div class="tasks-card">
+        <div class="card-inner">
+          <div class="task-list" id="tasks-consulting"></div>
+          <button class="add-task-btn no-export" onclick="addTask('consulting', 'blue')">+ Ajouter une tâche</button>
+        </div>
+        <div class="card-footer footer-blue"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-inner">
+          <div class="status-list" id="status-consulting"></div>
+          <button class="add-task-btn no-export" onclick="addStatus('consulting')">+ Ajouter un statut</button>
+        </div>
+        <div class="card-footer footer-blue"></div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- DÉV PRODUIT -->
+    <div class="section" id="section-dev">
+      <div class="section-header">
+        <div class="section-dot dot-green"></div>
+        <input class="editable-title" value="DÉV" onchange="saveState()">
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;color:var(--text-muted);font-style:italic;font-weight:400;">&nbsp;(Produit)</span>
+        <span class="edit-hint no-export">cliquez pour éditer</span>
+      </div>
+
+      <div class="tasks-card">
+        <div class="card-inner">
+          <div class="task-list" id="tasks-dev"></div>
+          <button class="add-task-btn no-export" onclick="addTask('dev', 'green')">+ Ajouter une tâche</button>
+        </div>
+        <div class="card-footer footer-green"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-inner">
+          <div class="status-list" id="status-dev"></div>
+          <button class="add-task-btn no-export" onclick="addStatus('dev')">+ Ajouter un statut</button>
+        </div>
+        <div class="card-footer footer-green"></div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- MARKETING -->
+    <div class="section" id="section-marketing">
+      <div class="section-header">
+        <div class="section-dot dot-orange"></div>
+        <input class="editable-title" value="Marketing" onchange="saveState()">
+        <span class="edit-hint no-export">cliquez pour éditer</span>
+      </div>
+
+      <div class="tasks-card">
+        <div class="card-inner">
+          <div class="task-list" id="tasks-marketing"></div>
+          <button class="add-task-btn orange no-export" onclick="addTask('marketing', 'orange')">+ Ajouter une tâche</button>
+        </div>
+        <div class="card-footer footer-orange"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-inner">
+          <div class="status-list" id="status-marketing"></div>
+          <button class="add-task-btn orange no-export" onclick="addStatus('marketing')">+ Ajouter un statut</button>
+        </div>
+        <div class="card-footer footer-orange"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <p>Génération de l'image…</p>
+</div>
+
+<script>
+// ── DEFAULT DATA ──
+const defaultData = {
+  consulting: {
+    tasks: ["POC AKDITAL", "Plateforme partenaires (Louis)", "Refonte slides"],
+    statuses: [
+      { text: "Maquette terminée", type: "done" },
+      { text: "Maquette terminée", type: "done" },
+      { text: "En cours", type: "progress" }
+    ]
+  },
+  dev: {
+    tasks: [""],
+    statuses: [{ text: "", type: "todo" }]
+  },
+  marketing: {
+    tasks: [
+      "Redesign / Mise à jour de la charte graphique Digdash",
+      "Nouvelle UI page d'accueil du site / page produit",
+      "Nouvelle UI page participation salon / page webinaire"
+    ],
+    statuses: [
+      { text: "Modifications en cours", type: "progress" },
+      { text: "Maquette à venir / envoi aujourd'hui", type: "todo" },
+      { text: "Maquette à venir / uniformisation images", type: "todo" }
+    ]
+  }
+};
+
+const statusCycle = ["done", "progress", "todo"];
+const statusLabels = { done: "Terminé ✓", progress: "En cours", todo: "À venir" };
+const statusClasses = { done: "status-done", progress: "status-progress", todo: "status-todo" };
+
+function getWeekNumber(d) {
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+}
+
+function getWeekBounds(d) {
+  // Monday to Friday of the week containing d
+  const day = d.getDay(); // 0=Sun, 1=Mon...
+  const diffToMon = (day === 0) ? -6 : 1 - day;
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + diffToMon);
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  return { monday, friday };
+}
+
+function formatDate(d, opts) {
+  return d.toLocaleDateString('fr-FR', opts);
+}
+
+function initDates() {
+  const now = new Date();
+  const weekNum = getWeekNumber(now);
+  const { monday, friday } = getWeekBounds(now);
+
+  const monStr = formatDate(monday, { day: 'numeric', month: 'long' });
+  const friStr = formatDate(friday, { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Always override with computed value — never rely on stored string
+  const weekLabel = `Semaine ${weekNum}  ·  ${monStr} – ${friStr}`;
+  document.getElementById('week-input').value = weekLabel;
+
+  updateHeader();
+}
+
+function updateHeader() {
+  const val = document.getElementById('week-input').value;
+  document.getElementById('header-week').textContent = val || 'Semaine —';
+  const now = new Date();
+  document.getElementById('header-date').textContent = formatDate(now, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+}
+
+document.getElementById('week-input').addEventListener('input', updateHeader);
+
+function createTaskEl(section, text, color) {
+  const div = document.createElement('div');
+  div.className = 'task-item';
+  const bulletClass = color === 'orange' ? 'task-bullet-orange' : color === 'green' ? 'task-bullet-green' : '';
+  div.innerHTML = `
+    <div class="task-bullet ${bulletClass}"></div>
+    <textarea class="task-text" rows="1" placeholder="Nouvelle tâche…" oninput="autoResize(this);saveState()">${text}</textarea>
+    <button class="task-delete no-export" onclick="this.closest('.task-item').remove();saveState()">✕</button>
+  `;
+  return div;
+}
+
+function createStatusEl(section, text, type) {
+  const div = document.createElement('div');
+  div.className = 'status-item';
+  div.innerHTML = `
+    <button class="status-badge ${statusClasses[type]}" onclick="cycleStatus(this)">${statusLabels[type]}</button>
+    <input type="text" class="status-text" value="${text}" placeholder="Description…" oninput="saveState()">
+    <button class="status-delete no-export" onclick="this.closest('.status-item').remove();saveState()">✕</button>
+  `;
+  return div;
+}
+
+function cycleStatus(btn) {
+  const classes = Object.values(statusClasses);
+  const current = classes.find(c => btn.classList.contains(c)) || 'status-todo';
+  const keys = Object.keys(statusClasses);
+  const currentKey = keys.find(k => statusClasses[k] === current);
+  const nextKey = statusCycle[(statusCycle.indexOf(currentKey) + 1) % statusCycle.length];
+  classes.forEach(c => btn.classList.remove(c));
+  btn.classList.add(statusClasses[nextKey]);
+  btn.textContent = statusLabels[nextKey];
+  saveState();
+}
+
+function addTask(section, color) {
+  const list = document.getElementById(`tasks-${section}`);
+  const el = createTaskEl(section, '', color);
+  list.appendChild(el);
+  el.querySelector('textarea').focus();
+  saveState();
+}
+
+function addStatus(section) {
+  const list = document.getElementById(`status-${section}`);
+  const el = createStatusEl(section, '', 'todo');
+  list.appendChild(el);
+  el.querySelector('input').focus();
+  saveState();
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function renderSection(section, data, color) {
+  const taskList = document.getElementById(`tasks-${section}`);
+  const statusList = document.getElementById(`status-${section}`);
+  taskList.innerHTML = '';
+  statusList.innerHTML = '';
+
+  data.tasks.forEach(t => {
+    const el = createTaskEl(section, t, color);
+    taskList.appendChild(el);
+  });
+
+  data.statuses.forEach(s => {
+    const el = createStatusEl(section, s.text, s.type);
+    statusList.appendChild(el);
+  });
+
+  taskList.querySelectorAll('textarea').forEach(autoResize);
+}
+
+function saveState() {
+  const state = {};
+  ['consulting','dev','marketing'].forEach(sec => {
+    state[sec] = {
+      tasks: [...document.getElementById(`tasks-${sec}`).querySelectorAll('textarea')].map(t => t.value),
+      statuses: [...document.getElementById(`status-${sec}`).querySelectorAll('.status-item')].map(item => {
+        const btn = item.querySelector('.status-badge');
+        const keys = Object.keys(statusClasses);
+        const type = keys.find(k => btn.classList.contains(statusClasses[k])) || 'todo';
+        return { text: item.querySelector('.status-text').value, type };
+      })
+    };
+  });
+  try { localStorage.setItem('weekly-design-state', JSON.stringify(state)); } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('weekly-design-state');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function resetSlide() {
+  if (confirm('Réinitialiser toutes les tâches ?')) {
+    try { localStorage.removeItem('weekly-design-state'); } catch(e) {}
+    init();
+  }
+}
+
+function init() {
+  const saved = loadState() || defaultData;
+  renderSection('consulting', saved.consulting, 'blue');
+  renderSection('dev', saved.dev, 'green');
+  renderSection('marketing', saved.marketing, 'orange');
+  initDates();
+}
+
+// ── EXPORT ──
+async function exportPNG() {
+  const overlay = document.getElementById('loading-overlay');
+  overlay.classList.add('active');
+
+  // Hide edit-only elements
+  document.querySelectorAll('.no-export').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.edit-hint').forEach(el => el.style.display = 'none');
+
+  const resMap = { '1080': [1920,1080], '2k': [2560,1440], '4k': [3840,2160] };
+  const res = document.getElementById('resolution-select').value;
+  const [targetW, targetH] = resMap[res];
+  const slide = document.getElementById('slide');
+  const slideW = slide.offsetWidth;
+  const scale = targetW / slideW;
+
+  try {
+    const canvas = await html2canvas(slide, {
+      scale: scale,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#F4F4FB',
+      logging: false,
+      width: slideW,
+      height: slide.scrollHeight
+    });
+
+    // Create final canvas at exact resolution
+    const finalCanvas = document.createElement('canvas');
+    finalCanvas.width = targetW;
+    finalCanvas.height = targetH;
+    const ctx = finalCanvas.getContext('2d');
+
+    // Fill background
+    ctx.fillStyle = '#F4F4FB';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    // Center vertically if content shorter than target height
+    const srcH = canvas.height;
+    const destH = Math.min(srcH, targetH);
+    const yOffset = Math.max(0, (targetH - srcH) / 2);
+    ctx.drawImage(canvas, 0, 0, targetW, srcH, 0, yOffset, targetW, destH);
+
+    const link = document.createElement('a');
+    link.download = `weekly-design-${res}-${new Date().toISOString().slice(0,10)}.png`;
+    link.href = finalCanvas.toDataURL('image/png', 1.0);
+    link.click();
+  } catch(err) {
+    alert('Erreur lors de l\'export : ' + err.message);
+  } finally {
+    document.querySelectorAll('.no-export').forEach(el => el.style.display = '');
+    document.querySelectorAll('.edit-hint').forEach(el => el.style.display = '');
+    overlay.classList.remove('active');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
