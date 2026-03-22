@@ -702,7 +702,7 @@ function updateHeader() {
   document.getElementById('header-date').textContent = formatDate(now, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 }
  
-document.getElementById('week-input').addEventListener('input', updateHeader);
+document.getElementById('week-input').addEventListener('input', () => { updateHeader(); saveState(); });
  
 function createTaskEl(section, text, color) {
   const div = document.createElement('div');
@@ -782,7 +782,9 @@ function renderSection(section, data, color) {
 function saveState() {
   const state = {};
   ['consulting','dev','marketing'].forEach(sec => {
+    const titleEl = document.querySelector(`#section-${sec} .editable-title`);
     state[sec] = {
+      title: titleEl ? titleEl.value : null,
       tasks: [...document.getElementById(`tasks-${sec}`).querySelectorAll('textarea')].map(t => t.value),
       statuses: [...document.getElementById(`status-${sec}`).querySelectorAll('.status-item')].map(item => {
         const btn = item.querySelector('.status-badge');
@@ -792,6 +794,7 @@ function saveState() {
       })
     };
   });
+  state.weekInput = document.getElementById('week-input').value;
   try { localStorage.setItem('weekly-design-state', JSON.stringify(state)); } catch(e) {}
 }
  
@@ -811,11 +814,28 @@ function resetSlide() {
 }
  
 function init() {
-  const saved = loadState() || defaultData;
-  renderSection('consulting', saved.consulting, 'blue');
-  renderSection('dev', saved.dev, 'green');
-  renderSection('marketing', saved.marketing, 'orange');
-  initDates();
+  const saved = loadState();
+  const data = saved || defaultData;
+  renderSection('consulting', data.consulting, 'blue');
+  renderSection('dev', data.dev, 'green');
+  renderSection('marketing', data.marketing, 'orange');
+
+  if (saved) {
+    ['consulting', 'dev', 'marketing'].forEach(sec => {
+      if (saved[sec] && saved[sec].title) {
+        const titleEl = document.querySelector(`#section-${sec} .editable-title`);
+        if (titleEl) titleEl.value = saved[sec].title;
+      }
+    });
+    if (saved.weekInput) {
+      document.getElementById('week-input').value = saved.weekInput;
+      updateHeader();
+    } else {
+      initDates();
+    }
+  } else {
+    initDates();
+  }
 }
  
 // ── EXPORT ──
