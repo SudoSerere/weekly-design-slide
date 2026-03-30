@@ -199,6 +199,7 @@
     font-family: 'DM Sans', sans-serif;
     cursor: text;
     min-width: 50px;
+    white-space: nowrap;
   }
   .section-title:focus { border-bottom: 1.5px solid var(--blue); }
 
@@ -255,14 +256,18 @@
     font-family: 'DM Sans', sans-serif;
     cursor: text;
     padding: 0 10px 0 0;
-    resize: none;
+    word-break: break-word;
     min-height: 20px;
-    overflow: hidden;
   }
   .task-text:focus {
     background: rgba(49,47,150,0.04);
     border-radius: 4px;
     padding: 2px 10px 2px 4px;
+  }
+  .task-text:empty:before {
+    content: attr(data-placeholder);
+    color: var(--text-muted);
+    pointer-events: none;
   }
 
   /* STATUS */
@@ -400,7 +405,7 @@
     <div class="section" id="section-consulting">
       <div class="section-header">
         <div class="section-bar bar-blue"></div>
-        <input class="section-title" value="Consulting" onchange="saveState()">
+        <div class="section-title" contenteditable="true" oninput="saveState()">Consulting</div>
         <span class="edit-hint no-export">éditable</span>
         <span class="task-count" id="count-consulting"></span>
       </div>
@@ -417,7 +422,7 @@
     <div class="section" id="section-dev">
       <div class="section-header">
         <div class="section-bar bar-green"></div>
-        <input class="section-title" value="DÉV" onchange="saveState()">
+        <div class="section-title" contenteditable="true" oninput="saveState()">DÉV</div>
         <span class="section-subtitle">&nbsp;Produit</span>
         <span class="edit-hint no-export">éditable</span>
         <span class="task-count" id="count-dev"></span>
@@ -435,7 +440,7 @@
     <div class="section" id="section-marketing">
       <div class="section-header">
         <div class="section-bar bar-orange"></div>
-        <input class="section-title" value="Marketing" onchange="saveState()">
+        <div class="section-title" contenteditable="true" oninput="saveState()">Marketing</div>
         <span class="edit-hint no-export">éditable</span>
         <span class="task-count" id="count-marketing"></span>
       </div>
@@ -523,7 +528,7 @@ function createRow(text, status, section) {
   row.className = 'task-row';
   row.innerHTML = `
     <span class="task-index">—</span>
-    <textarea class="task-text" rows="1" placeholder="Nouvelle tâche…" oninput="autoResize(this);saveState()">${escHtml(text)}</textarea>
+    <div class="task-text" contenteditable="true" data-placeholder="Nouvelle tâche…" oninput="saveState()">${escHtml(text)}</div>
     <button class="status-badge ${statusClass[status]}" onclick="cycleStatus(this)">${statusLabels[status]}</button>
     <button class="task-delete no-export" onclick="removeRow(this,'${section}')">✕</button>
   `;
@@ -531,12 +536,7 @@ function createRow(text, status, section) {
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 'px';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function cycleStatus(btn) {
@@ -574,7 +574,7 @@ function addTask(section) {
   const list = document.getElementById(`tasks-${section}`);
   const row = createRow('', 'todo', section);
   list.appendChild(row);
-  row.querySelector('textarea').focus();
+  row.querySelector('.task-text').focus();
   reindex(section);
   saveState();
 }
@@ -583,18 +583,19 @@ function renderSection(section, data) {
   const list = document.getElementById(`tasks-${section}`);
   list.innerHTML = '';
   data.tasks.forEach(t => list.appendChild(createRow(t.text, t.status, section)));
-  list.querySelectorAll('textarea').forEach(autoResize);
   reindex(section);
 }
 
 function saveState() {
   const state = {};
   ['consulting','dev','marketing'].forEach(sec => {
+    const titles = document.getElementById(`section-${sec}`).querySelectorAll('.section-title');
     state[sec] = {
+      title: titles[0] ? titles[0].textContent.trim() : '',
       tasks: [...document.getElementById(`tasks-${sec}`).querySelectorAll('.task-row')].map(row => {
         const btn = row.querySelector('.status-badge');
         const status = statusCycle.find(s => btn.classList.contains(statusClass[s])) || 'todo';
-        return { text: row.querySelector('textarea').value, status };
+        return { text: row.querySelector('.task-text').textContent.trim(), status };
       })
     };
   });
@@ -616,7 +617,20 @@ function resetSlide() {
 async function exportPNG() {
   const overlay = document.getElementById('loading-overlay');
   overlay.classList.add('active');
-  document.querySelectorAll('.no-export').forEach(el => el.style.display = 'none');
+
+  // Use visibility:hidden for inline elements (edit-hint) to preserve layout
+  // Use display:none only for block-level add buttons and footer hint
+  const inlineHide = document.querySelectorAll('.edit-hint');
+  const blockHide  = document.querySelectorAll('.add-row-btn, .task-delete, .footer-hint');
+
+  inlineHide.forEach(el => {
+    el.dataset.origVis = el.style.visibility;
+    el.style.visibility = 'hidden';
+  });
+  blockHide.forEach(el => {
+    el.dataset.origDisplay = el.style.display;
+    el.style.display = 'none';
+  });
 
   const resMap = { '1080':[1920,1080], '2k':[2560,1440], '4k':[3840,2160] };
   const [targetW, targetH] = resMap[document.getElementById('resolution-select').value];
@@ -643,7 +657,8 @@ async function exportPNG() {
   } catch(err) {
     alert('Erreur : ' + err.message);
   } finally {
-    document.querySelectorAll('.no-export').forEach(el => el.style.display = '');
+    inlineHide.forEach(el => el.style.visibility = el.dataset.origVis || '');
+    blockHide.forEach(el => el.style.display = el.dataset.origDisplay || '');
     overlay.classList.remove('active');
   }
 }
