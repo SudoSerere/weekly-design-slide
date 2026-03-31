@@ -18,12 +18,12 @@
     --green:       #1DB2B6;
     --green-dark:  #158A8D;
     --green-soft:  #E5F7F8;
-    --bg:          #F4F4FB;
+    --bg:          #FFFFFF;
     --card:        #FFFFFF;
     --text:        #1A1940;
     --text-muted:  #8080B0;
     --border:      #E0E0F0;
-    --row-hover:   #F7F7FD;
+    --row-hover:   #F5F5FD;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,11 +102,11 @@
 
   /* SLIDE */
   #slide {
-    background: var(--bg);
+    background: #FFFFFF;
     width: 960px;
-    border-radius: 16px;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 20px 56px rgba(49,47,150,0.18);
+    box-shadow: 0 8px 40px rgba(49,47,150,0.12);
   }
 
   /* HEADER */
@@ -227,8 +227,7 @@
   /* TASK ROW */
   .task-row {
     display: flex;
-    align-items: center;
-    gap: 0;
+    flex-direction: column;
     padding: 6px 8px;
     border-radius: 6px;
     transition: background .12s;
@@ -237,6 +236,13 @@
   .task-row:last-of-type { border-bottom: none; }
   .task-row:hover { background: var(--row-hover); }
 
+  .task-row-main {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+  }
+
   .task-index {
     font-size: 11px;
     color: var(--text-muted);
@@ -244,6 +250,8 @@
     width: 20px;
     flex-shrink: 0;
     user-select: none;
+    align-self: flex-start;
+    padding-top: 2px;
   }
   .task-text {
     flex: 1;
@@ -269,6 +277,51 @@
     color: var(--text-muted);
     pointer-events: none;
   }
+
+  /* COMMENT */
+  .task-comment-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-left: 20px;
+    margin-top: 2px;
+  }
+  .comment-icon {
+    font-size: 10px;
+    color: var(--text-muted);
+    opacity: 0.5;
+    flex-shrink: 0;
+    margin-top: 1px;
+    user-select: none;
+  }
+  .task-comment {
+    flex: 1;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.4;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    cursor: text;
+    word-break: break-word;
+    min-height: 16px;
+    padding: 0;
+  }
+  .task-comment:empty:before {
+    content: attr(data-placeholder);
+    color: var(--border);
+    pointer-events: none;
+    font-style: italic;
+  }
+  .task-comment:focus { outline: none; }
+  .task-comment:focus:empty:before { color: var(--text-muted); opacity: .5; }
+  /* Hide comment line when empty and row not focused/hovered — show on hover */
+  .task-comment-wrap { opacity: 0; max-height: 0; overflow: hidden; transition: opacity .15s, max-height .15s; }
+  .task-row:hover .task-comment-wrap,
+  .task-comment-wrap:focus-within,
+  .task-comment-wrap.has-comment { opacity: 1; max-height: 60px; }
 
   /* STATUS */
   .status-badge {
@@ -472,17 +525,17 @@
 <script>
 const defaultData = {
   consulting: { tasks: [
-    { text: "POC AKDITAL", status: "done" },
-    { text: "Plateforme partenaires (Louis)", status: "done" },
-    { text: "Refonte slides", status: "progress" }
+    { text: "POC AKDITAL", status: "done", comment: "" },
+    { text: "Plateforme partenaires (Louis)", status: "done", comment: "" },
+    { text: "Refonte slides", status: "progress", comment: "" }
   ]},
   dev: { tasks: [
-    { text: "", status: "todo" }
+    { text: "", status: "todo", comment: "" }
   ]},
   marketing: { tasks: [
-    { text: "Redesign / Mise à jour de la charte graphique Digdash", status: "progress" },
-    { text: "Nouvelle UI page d'accueil du site / page produit", status: "todo" },
-    { text: "Nouvelle UI page participation salon / page webinaire", status: "todo" }
+    { text: "Redesign / Mise à jour de la charte graphique Digdash", status: "progress", comment: "" },
+    { text: "Nouvelle UI page d'accueil du site / page produit", status: "todo", comment: "" },
+    { text: "Nouvelle UI page participation salon / page webinaire", status: "todo", comment: "" }
   ]}
 };
 
@@ -507,36 +560,58 @@ function getWeekBounds(d) {
 
 function fmt(d, opts) { return d.toLocaleDateString('fr-FR', opts); }
 
-function initDates() {
-  const now = new Date();
+async function initDates() {
+  let now;
+  try {
+    const res = await fetch('https://worldtimeapi.org/api/timezone/Europe/Paris');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    now = new Date(data.datetime);
+  } catch(e) {
+    now = new Date();
+  }
   const wn = getWeekNumber(now);
   const { mon, fri } = getWeekBounds(now);
   const label = `Semaine ${wn}  ·  ${fmt(mon,{ day:'numeric', month:'short' })} – ${fmt(fri,{ day:'numeric', month:'short', year:'numeric' })}`;
   document.getElementById('week-input').value = label;
-  updateHeader();
+  updateHeader(now);
 }
 
-function updateHeader() {
+function updateHeader(now) {
+  const d = now || new Date();
   document.getElementById('header-week').textContent = document.getElementById('week-input').value || '—';
-  document.getElementById('header-date').textContent = fmt(new Date(), { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('header-date').textContent = fmt(d, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 }
 
-document.getElementById('week-input').addEventListener('input', updateHeader);
+document.getElementById('week-input').addEventListener('input', () => updateHeader());
 
-function createRow(text, status, section) {
+function createRow(text, status, section, comment) {
   const row = document.createElement('div');
   row.className = 'task-row';
+  const hasComment = comment && comment.trim().length > 0;
   row.innerHTML = `
-    <span class="task-index">—</span>
-    <div class="task-text" contenteditable="true" data-placeholder="Nouvelle tâche…" oninput="saveState()">${escHtml(text)}</div>
-    <button class="status-badge ${statusClass[status]}" onclick="cycleStatus(this)">${statusLabels[status]}</button>
-    <button class="task-delete no-export" onclick="removeRow(this,'${section}')">✕</button>
+    <div class="task-row-main">
+      <span class="task-index">—</span>
+      <div class="task-text" contenteditable="true" data-placeholder="Nouvelle tâche…" oninput="saveState()">${escHtml(text)}</div>
+      <button class="status-badge ${statusClass[status]}" onclick="cycleStatus(this)">${statusLabels[status]}</button>
+      <button class="task-delete no-export" onclick="removeRow(this,'${section}')">✕</button>
+    </div>
+    <div class="task-comment-wrap${hasComment ? ' has-comment' : ''}">
+      <span class="comment-icon">↳</span>
+      <div class="task-comment" contenteditable="true" data-placeholder="Ajouter un commentaire…" oninput="onCommentInput(this);saveState()">${escHtml(comment || '')}</div>
+    </div>
   `;
   return row;
 }
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function onCommentInput(el) {
+  const wrap = el.closest('.task-comment-wrap');
+  if (el.textContent.trim().length > 0) wrap.classList.add('has-comment');
+  else wrap.classList.remove('has-comment');
 }
 
 function cycleStatus(btn) {
@@ -572,7 +647,7 @@ function updateCount(section) {
 
 function addTask(section) {
   const list = document.getElementById(`tasks-${section}`);
-  const row = createRow('', 'todo', section);
+  const row = createRow('', 'todo', section, '');
   list.appendChild(row);
   row.querySelector('.task-text').focus();
   reindex(section);
@@ -582,7 +657,7 @@ function addTask(section) {
 function renderSection(section, data) {
   const list = document.getElementById(`tasks-${section}`);
   list.innerHTML = '';
-  data.tasks.forEach(t => list.appendChild(createRow(t.text, t.status, section)));
+  data.tasks.forEach(t => list.appendChild(createRow(t.text, t.status, section, t.comment || '')));
   reindex(section);
 }
 
@@ -595,7 +670,12 @@ function saveState() {
       tasks: [...document.getElementById(`tasks-${sec}`).querySelectorAll('.task-row')].map(row => {
         const btn = row.querySelector('.status-badge');
         const status = statusCycle.find(s => btn.classList.contains(statusClass[s])) || 'todo';
-        return { text: row.querySelector('.task-text').textContent.trim(), status };
+        const commentEl = row.querySelector('.task-comment');
+        return {
+          text: row.querySelector('.task-text').textContent.trim(),
+          status,
+          comment: commentEl ? commentEl.textContent.trim() : ''
+        };
       })
     };
   });
@@ -640,13 +720,13 @@ async function exportPNG() {
   try {
     const canvas = await html2canvas(slide, {
       scale, useCORS: true, allowTaint: true,
-      backgroundColor: '#F4F4FB', logging: false,
+      backgroundColor: '#FFFFFF', logging: false,
       width: slide.offsetWidth, height: slide.scrollHeight
     });
     const final = document.createElement('canvas');
     final.width = targetW; final.height = targetH;
     const ctx = final.getContext('2d');
-    ctx.fillStyle = '#F4F4FB';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, targetW, targetH);
     const yOff = Math.max(0, (targetH - canvas.height) / 2);
     ctx.drawImage(canvas, 0, 0, targetW, canvas.height, 0, yOff, targetW, Math.min(canvas.height, targetH));
