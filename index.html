@@ -99,6 +99,18 @@
     width: 230px;
   }
   .week-input::placeholder { color: rgba(255,255,255,0.35); }
+  .date-input {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    color: white;
+    color-scheme: dark;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 10px;
+    outline: none;
+    cursor: pointer;
+  }
 
   /* SLIDE */
   #slide {
@@ -158,7 +170,13 @@
   .date-label {
     color: rgba(255,255,255,0.45);
     font-size: 11px;
+    background: none;
+    border: 0;
+    font-family: inherit;
+    cursor: pointer;
   }
+  .date-label:hover { color: white; }
+  .date-label:focus-visible { outline: 2px solid white; outline-offset: 3px; }
 
   /* BODY */
   .slide-body {
@@ -231,7 +249,7 @@
     padding: 6px 8px;
     border-radius: 6px;
     transition: background .12s;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 0.5px solid var(--border);
   }
   .task-row:last-of-type { border-bottom: none; }
   .task-row:hover { background: var(--row-hover); }
@@ -429,6 +447,7 @@
 <div class="toolbar">
   <h2>✦ Weekly Slide</h2>
   <input class="week-input" id="week-input" type="text" placeholder="Semaine —">
+  <input class="date-input" id="date-input" type="date" lang="fr" aria-label="Date du rapport">
   <select class="resolution-select" id="resolution-select">
     <option value="1080">Export 1080p</option>
     <option value="2k" selected>Export 2K</option>
@@ -448,7 +467,7 @@
     <div class="slide-title">Weekly Design</div>
     <div class="header-right">
       <span class="week-badge" id="header-week">—</span>
-      <span class="date-label" id="header-date"></span>
+      <button class="date-label" id="header-date" type="button" title="Modifier la date" aria-label="Modifier la date">Choisir une date</button>
     </div>
   </div>
 
@@ -560,7 +579,32 @@ function getWeekBounds(d) {
 
 function fmt(d, opts) { return d.toLocaleDateString('fr-FR', opts); }
 
+function parseDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return null;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(year, month - 1, day, 12);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+}
+
+function dateValue(date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function setReportDate(date) {
+  document.getElementById('date-input').value = dateValue(date);
+  const wn = getWeekNumber(date);
+  const { mon, fri } = getWeekBounds(date);
+  document.getElementById('week-input').value = `Semaine ${wn}  ·  ${fmt(mon,{ day:'numeric', month:'short' })} – ${fmt(fri,{ day:'numeric', month:'short', year:'numeric' })}`;
+  updateHeader();
+}
+
 async function initDates() {
+  let savedDate;
+  try { savedDate = parseDate(localStorage.getItem('weekly-report-date')); } catch(e) {}
+  if (savedDate) {
+    setReportDate(savedDate);
+    return;
+  }
   let now;
   try {
     const res = await fetch('https://worldtimeapi.org/api/timezone/Europe/Paris');
@@ -570,20 +614,28 @@ async function initDates() {
   } catch(e) {
     now = new Date();
   }
-  const wn = getWeekNumber(now);
-  const { mon, fri } = getWeekBounds(now);
-  const label = `Semaine ${wn}  ·  ${fmt(mon,{ day:'numeric', month:'short' })} – ${fmt(fri,{ day:'numeric', month:'short', year:'numeric' })}`;
-  document.getElementById('week-input').value = label;
-  updateHeader(now);
+  // A date chosen while the time request was pending takes priority.
+  if (!document.getElementById('date-input').value) setReportDate(now);
 }
 
-function updateHeader(now) {
-  const d = now || new Date();
+function updateHeader() {
+  const d = parseDate(document.getElementById('date-input').value);
   document.getElementById('header-week').textContent = document.getElementById('week-input').value || '—';
-  document.getElementById('header-date').textContent = fmt(d, { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('header-date').textContent = d ? fmt(d, { weekday:'long', day:'numeric', month:'long', year:'numeric' }) : 'Choisir une date';
 }
 
 document.getElementById('week-input').addEventListener('input', () => updateHeader());
+document.getElementById('date-input').addEventListener('change', event => {
+  const date = parseDate(event.target.value);
+  if (!date) return;
+  setReportDate(date);
+  try { localStorage.setItem('weekly-report-date', event.target.value); } catch(e) {}
+});
+document.getElementById('header-date').addEventListener('click', () => {
+  const picker = document.getElementById('date-input');
+  if (picker.showPicker) picker.showPicker();
+  else { picker.focus(); picker.click(); }
+});
 
 function createRow(text, status, section, comment) {
   const row = document.createElement('div');
